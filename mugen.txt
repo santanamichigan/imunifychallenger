@@ -26,7 +26,7 @@ e.preventDefault(); var form = document.querySelector('form');form.style.display
 exit;}
 if (isset($_GET['logout'])) {session_unset();session_destroy();header("Location: " . $_SERVER['PHP_SELF']);exit();}
 if (!isset($_SESSION['authenticated'])) {
-$stored_hashed_password = '$2a$10$cktfi438k3nfv936pGg.NuejQxOqzSSe6MUwohu78pZITp6PlAJ4O'; 
+$stored_hashed_password = '$2y$10$a1K97JAkJsMzE/YpDkcYYOvJ4TEB7B99pXIYj5/H0E8EAamXznnOW'; 
 if (isset($_POST['pass']) && password_verify($_POST['pass'], $stored_hashed_password)) {
 $_SESSION['authenticated'] = true;
 $_SESSION['FM_SESSION_ID']['password_plaintext'] = $_POST['pass'];} else {
